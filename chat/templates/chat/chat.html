@@ -24,7 +24,6 @@
                 ws-connect="/ws/chatroom/global-chat"
                 ws-send
                 _="on htmx:wsAfterSend reset() me">
-            >
                 {% csrf_token %}
                 {{ form }}
             </form>

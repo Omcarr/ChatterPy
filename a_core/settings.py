@@ -89,11 +89,26 @@ TEMPLATES = [
 
 # WSGI_APPLICATION = 'a_core.wsgi.application'
 ASGI_APPLICATION='a_core.asgi.application' #made is async
+
+
+#dev mode channel layer i.e in memory channel layer
 CHANNEL_LAYERS = {
     'default': {
         "BACKEND": "channels.layers.InMemoryChannelLayer",
     }
     }
+
+# #production channel layer, redis hosted on railway
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [('redis://default:ZvQaQSZRcASHfojzKAghMisrTdEKcVCR@autorack.proxy.rlwy.net:35377')]
+#         },
+#     },
+# }
+
+
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 

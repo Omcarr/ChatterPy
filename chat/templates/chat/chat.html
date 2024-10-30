@@ -7,7 +7,19 @@
         
         <div class="flex justify-center text-emerald-400 bg-gray-800 p-2 sticky top-0 z-10">
             <div id="online-icon"></div>
+            {% if other_user %}
+            <a href="{% url 'profile' other_user.username %}">
+                <div class="flex items-center gap-2 p-4 sticky top-0 z-10">
+                    <img class="w-10 h-10 rounded-full object-cover" src="{{ other_user.profile.avatar }}" />
+                    <div>
+                        <span class="font-bold text-white">{{ other_user.profile.name }}</span> 
+                        <span class="text-sm font-light text-gray-400">@{{ other_user.username }}</span>
+                    </div>
+                </div>
+            </a>
+            {% else %}
             <span id="online-count" class="pr-1"></span>
+            {% endif %}
         </div>
 
         <div id='chat_container' class="overflow-y-auto grow">
@@ -21,7 +33,7 @@
             <div class="flex items-center rounded-xl px-2 py-2">
                 <form id="chat_message_form" class="w-full" 
                 hx-ext="ws"
-                ws-connect="/ws/chatroom/global-chat"
+                ws-connect="/ws/chatroom/{{chatroom_name}}"
                 ws-send
                 _="on htmx:wsAfterSend reset() me">
                 {% csrf_token %}

@@ -7,9 +7,19 @@
     <div class="text-center">
         <h1>{{ profile.name }}</h1>
         <div class="text-gray-400 mb-2 -mt-3">@{{ profile.user.username }}</div>
-        {% if profile.info %}
-        <div class="mt-8 hyphens-auto">{{ profile.info|linebreaksbr }}</div>
-        {% endif %}  
+
+        <!-- <div class="max-w-xl mx-auto p-6 bg-gray-100 rounded-lg shadow-lg">
+            {% if profile.info %}
+            <div class="mt-4 break-words">
+              <p>{{ profile.info|linebreaksbr }}</p>
+            </div>
+            {% endif %}
+          </div> -->
+
+
+        {% if profile.user != user %}
+        <a class="button" href="{%url 'start-chat' profile.user.username %}"> Send Message</a> 
+        {% endif %} 
     </div>
 </div>
 

@@ -3,14 +3,27 @@ from django.contrib.auth.models import User
 from shortuuid import uuid
 # Create your models here.
 class ChatGroup(models.Model):
-    group_name=models.CharField(max_length=30, unique=True, default=uuid)
+    #Dms
+    group_name=models.CharField(max_length=50, unique=True, default=uuid)
+
+    #private gc
+    groupchat_name = models.CharField(max_length=50, null=True, blank=True)
+    admin = models.ForeignKey(User, related_name='groupchats', blank=True, null=True, on_delete=models.SET_NULL)
+
+    #general chat properties
     users_online=models.ManyToManyField(User, related_name="online_in_groups", blank=True)
     members=models.ManyToManyField(User, related_name="chat_groups", blank=True)
     isPrivate=models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return self.group_name
+
+    def save(self, *args, **kwargs):
+        if not self.group_name:
+            self.group_name = uuid()
+        super().save(*args, **kwargs)
     
+        
 
 class GroupMessage(models.Model):
     group=models.ForeignKey(ChatGroup, related_name='chat_messages', on_delete=models.CASCADE)

@@ -1,0 +1,26 @@
+<div x-data="{ modal_open: false }" >
+    <a @click="modal_open = true" class="cursor-pointer inline-block flex justify-end mt-4 text-sm text-gray-400 hover:text-red-500">Leave Chat</a>
+
+    <div x-show="modal_open" x-cloak
+        x-transition:enter="duration-300 ease-out relative z-50"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100">
+
+        <div class="fixed inset-0 bg-gray-800 bg-opacity-80 z-50"></div>
+        <div class="fixed inset-0 z-50">
+
+            <div class="flex min-h-full justify-center items-center p-6">
+            <div @click.away="modal_open = false" class="rounded-lg bg-white text-left shadow-xl p-6 w-full max-w-sm">
+                <h1 style="text-align: center;" >Leave this chat?</h1>
+                <form method='POST' action="{% url 'chatroom-leave' chat_group.group_name %}">
+                    {% csrf_token %}
+                    <div style="text-align: center;">
+                    <button type="submit" class="button-red mt-4">Leave</button>
+                    <a class="button button-gray ml-2 cursor-pointer" @click="modal_open = false">Cancel</a>
+                </div>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>

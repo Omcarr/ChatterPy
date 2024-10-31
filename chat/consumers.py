@@ -80,7 +80,7 @@ class ChatroomConsumer(WebsocketConsumer):
         
         context = {
             'online_count' : online_count,
-            # 'chat_group' : self.chatroom,
+            'chat_group' : self.chatroom,
             # 'users': users
         }
         #print(online_count)

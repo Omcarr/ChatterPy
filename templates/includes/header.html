@@ -20,7 +20,20 @@
                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                 >
                     <ul class="hoverlist [&>li>a]:justify-end">
+                        <li><a href="{% url 'new-groupchat' %}" style="color: indigo;">New Groupchat</a></li>
                         <li><a href="{%url 'home' %}">Global Chat</a></li>
+
+                        <!-- loading group chats -->
+                        {% for  chatroom in user.chat_groups.all %}
+                        {% if chatroom.groupchat_name %}
+                        <li>
+                            <a  class="leading-t text-right" href="{%url 'chatroom' chatroom.group_name %}"> {{chatroom.groupchat_name}} </a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+
+
+                        <!-- loading dms -->
                         {% for chatroom in user.chat_groups.all %}
                             {% if chatroom.isPrivate %}
                                 {% for member in chatroom.members.all %}
@@ -34,10 +47,6 @@
                 </div>
             </li>
             
-
-
-
-
             <li x-data="{ dropdownOpen: false }" class="relative">
                 <a @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false" class="cursor-pointer select-none">
                     <img class="h-8 w-8 rounded-full object-cover" src="{{ request.user.profile.avatar }}" alt="Avatar" />
@@ -52,16 +61,13 @@
                     <ul class="hoverlist [&>li>a]:justify-end">
                         <li><a href="{% url 'profile' %}">My Profile</a></li>
                         <li><a href="{% url 'profile-edit' %}">Edit Profile</a></li>
+                        
                         <li><a href="{% url 'profile-settings' %}">Settings</a></li>
                         <li><a href="{% url 'account_logout' %}">Log Out</a></li>
                     </ul>
                 </div>
             </li>
             
-
-
-
-
             {% else %}
             <li><a href="{% url 'account_login' %}">Login</a></li>
             <li><a href="{% url 'account_signup' %}?next={% url 'profile-onboarding' %}">Signup</a></li>

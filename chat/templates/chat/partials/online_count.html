@@ -27,9 +27,36 @@
 
 
 
-{% if online_count %}
-<div id="online-icon" class=" absolute top-2 left-2 rounded-full bg-green-500 p-1.5"></div>
-{% else %}
-<div id="online-icon" class=" absolute top-2 left-2 rounded-full bg-gray-500 p-1.5"></div>
-{% endif %}
 
+
+<!-- online statts for global chat and dms -->
+<div id="online-icon" class=" absolute top-2 left-2 rounded-full {% if online_count %} bg-green-500 {% else %}bg-gray-500 {% endif %} p-1.5"></div>
+
+
+<div id="groupchat-members" class="bg-gray-800 text-gray-300 px-4 py-2">
+    <ul class="flex space-x-2"> 
+        {% for member in chat_group.members.all %}
+        {% if member != user%}
+            <li class="flex items-center gap-2">
+                <div class="relative">
+                <a href="{% url 'profile' member.username %}">
+                    <!-- {% if member in chat_group.users_online.all %}
+                    <div id="online-icon" class=" absolute top-2 left-2 rounded-full bg-green-500 p-1.5"></div>
+                    {% else %}
+                    <div id="online-icon" class=" absolute top-2 left-2 rounded-full bg-gray-500 p-1.5"></div>
+                    {% endif %} -->
+                    
+                    <div id="online-icon" class="absolute bottom-0 right-0 transform translate-x-1/2 translate-y-1/2 rounded-full 
+                    {% if member in chat_group.users_online.all %}bg-green-500{% else %}bg-gray-500{% endif %} p-1"></div>
+
+
+
+                    <img class="w-8 h-8 rounded-full" src="{{ member.profile.avatar }}" alt="{{ member.username }}'s avatar">
+                </a>
+                </div>
+                <!-- <span class="text-sm font-medium">{{ member.profile.name|slice:":10" }}</span> -->
+            </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>

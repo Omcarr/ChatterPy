@@ -1,4 +1,5 @@
 {% extends 'layouts/blank.html'%}
+{% load static %}
 
 {% block content %}
 
@@ -62,37 +63,112 @@
                         {% endfor %}
                     </ul>
                 </div>
+
+               
+
+
+
+
+
+
+
                 <div class="sticky bottom-0 z-10 p-2 bg-gray-800">
-                    <div class="flex items-center rounded-xl px-2 py-2">
-                        <form id="chat_message_form" class="w-full" hx-ext="ws"
-                            ws-connect="/ws/chatroom/{{chatroom_name}}" ws-send _="on htmx:wsAfterSend reset() me">
+                    <div class="flex flex-col gap-2 items-center rounded-xl px-2 py-2 w-full">
+                        <div class="flex items-center justify-end w-full">
+                            <button onclick="toggleForm()" id="toggleButton" 
+                                    class="text-white px-3 py-2 rounded-md text-sm">
+                                <span id="toggleText">📎</span>
+                            </button>
+                        </div>
+                
+
+                
+                        <!-- Form for text messages (default mode) -->
+                        <form id="chat_message_form" class="w-full bg-transparent" hx-ext="ws"
+                              ws-connect="/ws/chatroom/{{chatroom_name}}" ws-send _="on htmx:wsAfterSend reset() me">
                             {% csrf_token %}
                             {{ form }}
                         </form>
-
+                
+                        <!-- Form for files (initially hidden) -->
+                        <form id="chat_file_form" enctype="multipart/form-data" class="flex items-center w-full gap-2" 
+                              hx-post="{% url 'chat-file-upload' chat_group.group_name %}" hx-target="#chat_messages" 
+                              hx-swap="beforeend" _="on htmx:beforeSend reset() me" style="display: none;">
+                            {% csrf_token %}
+                            <input type="file" name="file" id="id_file" 
+                                   class="w-full px-3 py-2 bg-gray-700 text-gray-200 border border-gray-500 rounded-md">
+                            <button type="submit" class="bg-purple-500 text-white px-3 py-2 rounded-md text-sm">
+                                Send
+                            </button>
+                        </form>
+                
                     </div>
-                </div>
-            </div>
+                </div>  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             <!-- leave chat option -->
-            {% if chat_group.members.exists and user != chat_group.admin %}
+                {% if chat_group.members.exists and user != chat_group.admin %}
+                    <a>
+                        {% include 'chat/partials/modal_chat_leave.html' %}
+                    </a>
+                {% endif %}
+</wrapper>
 
-            <a >
-                {% include 'chat/partials/modal_chat_leave.html' %}
-            </a>
-            {% endif %}
-        </wrapper>
-        
 
 {% endblock %}
 
 
 {% block javascript %}
 <script>
-    function scrollToBottom() {
-        const container = document.getElementById('chat_container');
-        container.scrollTop = container.scrollHeight;
+   function scrollToBottom(time=0) {
+        setTimeout(function() {
+            const container = document.getElementById('chat_container');
+            container.scrollTop = container.scrollHeight;
+        }, time);
     }
     scrollToBottom()
 </script>
+<script>
+    let isFileMode = false;
+
+    function toggleForm() {
+        isFileMode = !isFileMode;
+        document.getElementById("chat_message_form").style.display = isFileMode ? "none" : "block";
+        document.getElementById("chat_file_form").style.display = isFileMode ? "flex" : "none";
+        document.getElementById("toggleButton").textContent = isFileMode ? "✉️" : "📎";
+    }
+</script>
 {% endblock %}
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">

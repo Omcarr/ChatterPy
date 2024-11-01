@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from shortuuid import uuid
+import os
+from PIL import Image
+
 # Create your models here.
 class ChatGroup(models.Model):
     #Dms
@@ -32,12 +35,34 @@ class ChatGroup(models.Model):
 class GroupMessage(models.Model):
     group=models.ForeignKey(ChatGroup, related_name='chat_messages', on_delete=models.CASCADE)
     author=models.ForeignKey(User, on_delete=models.CASCADE)
-    body=models.CharField(max_length=300)
+    body=models.CharField(max_length=300,null=True)
+    file=models.FileField(upload_to='files/', blank=True, null=True)
     created=models.DateTimeField(auto_now_add=True)
 
+    @property
+    def filename(self):
+        if self.file:
+            return os.path.basename(self.file.name)
+        else:
+            return None
+
+
     def __str__(self):
-        return f'{self.author.username}: {self.body}'
+            if self.body:
+                return f'{self.author.username} : {self.body}'
+            elif self.file:
+                return f'{self.author.username} : {self.filename}'
     
     class Meta:
-        ordering=['-created']
+        ordering = ['-created']
+    
 
+    #pillow verifies if its a image, to avoid trying to display pdf or zip as an img
+    @property    
+    def is_image(self):
+        try:
+            image = Image.open(self.file) 
+            image.verify()
+            return True 
+        except:
+            return False

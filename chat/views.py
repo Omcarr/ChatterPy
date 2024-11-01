@@ -11,6 +11,7 @@ from django.http import Http404
 def chat_view(request, chatroom_name='global-chat'):
     chat_group=get_object_or_404(ChatGroup, group_name=chatroom_name)
     chat_messages=chat_group.chat_messages.all()[:30]
+
     form= ChatMessageForm()
 
     other_user = None
@@ -51,7 +52,7 @@ def chat_view(request, chatroom_name='global-chat'):
         'form' : form,
         'other_user' : other_user,
         'chatroom_name' : chatroom_name,
-        'chat_group' : chat_group
+        'chat_group' : chat_group,
     }
 
     return render(request,'chat/chat.html', context)
@@ -62,21 +63,18 @@ def get_or_create_chatroom(request, username):
         return redirect('home')
     
     other_user = User.objects.get(username = username)
-    my_chatrooms = request.user.chat_groups.filter(isPrivate=True)
+    my_chatrooms = set(request.user.chat_groups.filter(isPrivate=True))
+    other_users_chatrooms= set(other_user.chat_groups.filter(isPrivate=True))
     
-    
-    if my_chatrooms.exists():
-        for chatroom in my_chatrooms:
-            if other_user in chatroom.members.all():
-                chatroom = chatroom
-                break
-            else:
-                chatroom = ChatGroup.objects.create(isPrivate = True)
-                chatroom.members.add(other_user, request.user)
-    else:
+    already_exists_chatroom=my_chatrooms.intersection(other_users_chatrooms)
+
+    if not already_exists_chatroom:
         chatroom = ChatGroup.objects.create(isPrivate = True)
         chatroom.members.add(other_user, request.user)
-        
+    else:
+        chatroom=already_exists_chatroom.pop()
+
+    
     return redirect('chatroom', chatroom.group_name)
 
 @login_required
@@ -101,6 +99,7 @@ def create_groupchat(request):
 @login_required
 def chatroom_edit_view(request, chatroom_name):
     chat_group = get_object_or_404(ChatGroup, group_name=chatroom_name)
+
     if request.user != chat_group.admin:
         raise Http404()
     
@@ -120,7 +119,7 @@ def chatroom_edit_view(request, chatroom_name):
     
     context = {
         'form' : form,
-        'chat_group' : chat_group
+        'chat_group' : chat_group,
     }   
     return render(request, 'chat/chatroom_edit.html', context) 
 
@@ -133,11 +132,10 @@ def chatroom_delete_view(request, chatroom_name):
     
     if request.method == "POST":
         chat_group.delete()
-        messages.success(request, 'Chatroom deleted')
+        messages.success(request, f'Chatroom {chat_group.groupchat_name} deleted.')
         return redirect('home')
     
     return render(request, 'chat/chatroom_delete.html', {'chat_group':chat_group})
-
 
 
 @login_required

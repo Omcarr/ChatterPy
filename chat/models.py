@@ -15,6 +15,10 @@ class ChatGroup(models.Model):
     members=models.ManyToManyField(User, related_name="chat_groups", blank=True)
     isPrivate=models.BooleanField(default=False)
 
+
+    # Background image for the chat room
+    #background_img = models.ImageField(upload_to='chat_backgrounds/', null=True, blank=True)
+
     def __str__(self) -> str:
         return self.group_name
 
